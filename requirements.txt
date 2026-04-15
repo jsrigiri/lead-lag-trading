@@ -1,7 +1,7 @@
-pandas
-numpy
-scikit-learn
-matplotlib
-fastapi
-uvicorn
-pytest
+pandas==3.0.2
+numpy==2.4.4
+scikit-learn==1.8.0
+matplotlib==3.10.8
+fastapi==0.135.3
+uvicorn==0.44.0
+pytest==9.0.3
