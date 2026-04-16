@@ -8,6 +8,9 @@ CONFIG = {
     "task_type": "regression",   # regression or classification
     "model_type": "xgboost_reg", # ridge, xgboost_reg, lightgbm_reg, logistic, xgboost_clf, lightgbm_clf
 
+    "use_gpu": True,             # try GPU if available
+    "lightgbm_gpu_backend": "gpu",  # "gpu" or "cuda"
+
     "artifacts_dir": "artifacts",
     "model_path": "artifacts/model.joblib",
     "feature_cols_path": "artifacts/feature_columns.joblib"

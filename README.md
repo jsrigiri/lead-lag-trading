@@ -1,67 +1,71 @@
-# 🚀 Lead–Lag Trading System (End-to-End MLE + Quant Project)
+# 🚀 Lead–Lag Trading System (ML + XGBoost + LightGBM + GPU)
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
-![FastAPI](https://img.shields.io/badge/API-FastAPI-green)
-![ML](https://img.shields.io/badge/Model-Ridge%20Regression-orange)
+![ML](https://img.shields.io/badge/Models-XGBoost%20%7C%20LightGBM-orange)
+![API](https://img.shields.io/badge/API-FastAPI-green)
+![Tests](https://img.shields.io/badge/Tests-Pytest-blue)
 ![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen)
-![Docker](https://img.shields.io/badge/Container-Docker-2496ED)
 
 ---
 
 ## 📌 Overview
 
-This project builds a **production-style machine learning system** to detect and trade **lead–lag relationships** between two time series.
+This project builds a **lead–lag trading strategy** using machine learning models.
 
-It simulates a realistic quant workflow:
+It supports:
 
-> Signal Research → Feature Engineering → Model → Backtest → API Deployment
+- Regression → predict next return  
+- Classification → predict direction (up/down)  
+- Multiple models:
+  - Ridge / Logistic (baseline)
+  - XGBoost
+  - LightGBM  
+- Optional GPU acceleration  
+- Full backtesting pipeline  
+- FastAPI inference API  
+- Comprehensive pytest coverage  
 
 ---
 
 ## 🧠 Problem Statement
 
-In financial markets, some assets **lead others with a delay**.
+Identify whether one asset (X) leads another (Y) and exploit that relationship:
 
-Goal:
-- Predict **future returns of asset Y**
-- Using **past behavior of asset X**
-- Convert predictions into **trading signals**
-- Evaluate via **backtesting with costs**
+- Predict next move of Y using lagged signals from X and Y  
+- Convert predictions into trading positions  
+- Evaluate strategy via backtesting  
 
 ---
 
-## 🏗 System Architecture
+## 🏗 Architecture
 
 ```text
-Raw Data
+Raw Prices
    ↓
-Feature Engineering (lags, returns)
+Feature Engineering (lags)
    ↓
-Model Training (Ridge Regression)
+Model Training (ML / Boosting)
+   ↓
+Prediction (return or direction)
    ↓
 Signal Generation
    ↓
-Backtesting Engine
+Backtest (PnL + costs)
    ↓
-Model Serialization
-   ↓
-FastAPI + Uvicorn (Real-time inference)
+API Deployment
 ```
 
 ---
 
 ## ⚙️ Tech Stack
 
-| Layer | Tools |
-|---|---|
-| Data Processing | Pandas, NumPy |
-| Modeling | Scikit-learn (Ridge) |
-| Backtesting | Custom Python Engine |
-| API Serving | FastAPI + Uvicorn |
-| Serialization | Joblib |
-| Testing | Pytest |
-| Visualization | Matplotlib |
-| Containerization | Docker |
+| Layer              | Tools |
+|-------------------|------|
+| Data Processing    | Pandas, NumPy |
+| Modeling           | Scikit-learn, XGBoost, LightGBM |
+| API                | FastAPI |
+| Testing            | Pytest |
+| Visualization      | Matplotlib |
 
 ---
 
@@ -74,81 +78,68 @@ lead-lag-trading/
 ├── src/
 │   ├── features.py
 │   ├── model.py
-│   └── backtest.py
+│   ├── backtest.py
 ├── artifacts/
-│   ├── model.joblib
-│   └── feature_columns.joblib
 ├── tests/
-├── config.py
+│   ├── test_features.py
+│   ├── test_model.py
+│   ├── test_backtest.py
+│   ├── test_api.py
+│   └── conftest.py
+├── api.py
 ├── train.py
 ├── main.py
-├── api.py
-├── generate_data.py
+├── config.py
+├── pytest.ini
 ├── requirements.txt
-├── Dockerfile
 └── README.md
 ```
 
 ---
 
-## 📊 Feature Engineering
+## 🧠 Models Supported
 
-- Lagged returns of X and Y
-- Autoregressive signals
-- Cross-asset dependency modeling
+### Regression
+- Ridge
+- XGBoost Regressor
+- LightGBM Regressor
 
-```text
-X_lag_1 ... X_lag_k
-Y_lag_1 ... Y_lag_k
-target = Y_return(t+1)
-```
-
----
-
-## 🧠 Model
-
-- Ridge Regression (L2 regularization)
-- Handles multicollinearity in lag features
-- Predicts next-step return
-
-```text
-ŷ(t+1) = f(X_lags, Y_lags)
-```
+### Classification
+- Logistic Regression
+- XGBoost Classifier
+- LightGBM Classifier
 
 ---
 
-## 📈 Backtesting Engine
+## ⚡ GPU Support
 
-### Signal Logic
-- Long when prediction > threshold
-- Short when prediction < -threshold
-
-### Includes
-- Transaction costs
-- Position changes
-- Realistic PnL computation
-
----
-
-## 📊 Example Output
-
-### Equity Curve
-
-![Equity Curve](equity_curve.png)
-
-> Replace this sample image with your actual backtest output after running `main.py`.
-
-To save your own curve from `main.py`, use:
+Optional GPU acceleration:
 
 ```python
-plt.plot(equity)
-plt.title("Equity Curve")
-plt.xlabel("Time")
-plt.ylabel("Cumulative PnL")
-plt.tight_layout()
-plt.savefig("equity_curve.png", dpi=160)
-plt.show()
+"use_gpu": True
 ```
+
+### Behavior
+- Uses GPU if available
+- Falls back to CPU automatically
+- Works on all machines (no failure)
+
+---
+
+## 🧪 Testing (Pytest)
+
+Run:
+
+```bash
+pytest -v
+```
+
+### Coverage
+
+- Feature generation
+- Model training (CPU + GPU fallback)
+- Backtesting logic
+- API endpoints
 
 ---
 
@@ -160,25 +151,25 @@ plt.show()
 pip install -r requirements.txt
 ```
 
-### 2. Generate synthetic data
+---
 
-```bash
-python generate_data.py
-```
-
-### 3. Train model
+### 2. Train model
 
 ```bash
 python train.py
 ```
 
-### 4. Run backtest
+---
+
+### 3. Run backtest
 
 ```bash
 python main.py
 ```
 
-### 5. Start API server
+---
+
+### 4. Start API
 
 ```bash
 python -m uvicorn api:app --reload
@@ -186,137 +177,46 @@ python -m uvicorn api:app --reload
 
 Open:
 
-```text
+```
 http://127.0.0.1:8000/docs
 ```
 
 ---
 
-## 🔌 API Usage
+## 📈 Backtesting
 
-### POST `/predict`
-
-#### Input
-
-```json
-{
-  "features": {
-    "X": 100,
-    "Y": 90,
-    "X_ret": 0.2,
-    "Y_ret": -0.1,
-    "X_lag_1": 0.1,
-    "X_lag_2": 0.05
-  }
-}
-```
-
-#### Output
-
-```json
-{
-  "prediction": 0.0123
-}
-```
-
----
-
-## 🐳 Docker
-
-### Example `Dockerfile`
-
-```dockerfile
-FROM python:3.10-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-EXPOSE 8000
-
-CMD ["python", "-m", "uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
-### Build the image
-
-```bash
-docker build -t lead-lag-trading .
-```
-
-### Run the container
-
-```bash
-docker run -p 8000:8000 lead-lag-trading
-```
-
-Then open:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
----
-
-## 🧪 Testing
-
-```bash
-pytest
-```
-
----
-
-## 🎥 Demo
-
-A short API demo GIF is a great upgrade for GitHub, but it needs to be recorded on your machine. A simple workflow:
-
-1. Start the API with `python -m uvicorn api:app --reload`
-2. Open `/docs`
-3. Submit one `POST /predict` request
-4. Record 10–15 seconds with ScreenToGif, Kap, or Peek
-5. Save it as `demo.gif`
-6. Add this line to the README:
-
-```markdown
-![API Demo](demo.gif)
-```
+- Converts predictions → positions
+- Applies transaction costs
+- Outputs:
+  - Equity curve
+  - Positions
+  - Metrics
 
 ---
 
 ## 🔥 Key Highlights
 
-- End-to-end ML pipeline from research to serving
-- Time-series feature engineering for lag structure
-- Transaction-cost-aware backtesting
-- Model serialization and API deployment
-- Modular repo structure for extension and testing
-
----
-
-## 🚀 Future Improvements
-
-- Walk-forward validation
-- Hyperparameter tuning
-- XGBoost or LSTM baseline
-- Live data stream ingestion
-- CI/CD pipeline
-- Feature store integration
+- Lead–lag trading strategy  
+- Regression + classification modeling  
+- XGBoost & LightGBM integration  
+- GPU-aware training with fallback  
+- Full backtesting engine  
+- API deployment  
+- Strong test coverage  
 
 ---
 
 ## 🧠 Interview Talking Points
 
-- Built a lead–lag predictive trading system
-- Designed a time-series feature pipeline
-- Implemented realistic backtesting with costs
-- Exposed model inference through a low-latency API
-- Demonstrated a full ML lifecycle with deployment-oriented design
+- Built ML-driven trading system using lead–lag signals  
+- Compared linear vs boosting models  
+- Implemented regression vs classification strategies  
+- Added GPU-aware training with fallback logic  
+- Designed backtesting framework with transaction costs  
+- Created full test suite for robustness  
 
 ---
 
 ## 📌 Author
 
-Machine Learning Engineering Portfolio Project  
-(Quant + ML + Systems Focus)
+Machine Learning + Quant Trading Portfolio Project

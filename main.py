@@ -35,7 +35,13 @@ y_train = train["target"]
 X_test = test.drop(columns=["target"])
 y_test = test["target"]
 
-model = train_model(X_train, y_train, CONFIG["model_type"])
+model, used_device = train_model(
+    X_train,
+    y_train,
+    model_type=CONFIG["model_type"],
+    use_gpu=CONFIG["use_gpu"],
+    lightgbm_gpu_backend=CONFIG["lightgbm_gpu_backend"]
+)
 
 if CONFIG["task_type"] == "regression":
     preds = model.predict(X_test)
@@ -77,8 +83,8 @@ equity, pos = backtest(
 
 print("Task:", CONFIG["task_type"])
 print("Model:", CONFIG["model_type"])
+print("Device:", used_device)
 print("Metrics:", metrics)
-print("First 10 predictions:", preds[:10])
 
 plt.plot(equity)
 plt.title(f"Equity Curve - {CONFIG['model_type']} ({CONFIG['task_type']})")
