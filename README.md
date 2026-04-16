@@ -206,17 +206,6 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## 🧠 Interview Talking Points
-
-- Built ML-driven trading system using lead–lag signals  
-- Compared linear vs boosting models  
-- Implemented regression vs classification strategies  
-- Added GPU-aware training with fallback logic  
-- Designed backtesting framework with transaction costs  
-- Created full test suite for robustness  
-
----
-
 ## 📌 Author
 
 Machine Learning + Quant Trading Portfolio Project
