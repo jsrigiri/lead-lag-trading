@@ -194,6 +194,89 @@ http://127.0.0.1:8000/docs
 
 ---
 
+## 🔌 API Usage (Swagger Examples)
+
+Go to:
+
+```
+http://127.0.0.1:8000/docs
+```
+
+### Regression Example
+
+```json
+{
+  "features": {
+    "X": 103.4,
+    "Y": 201.2,
+    "X_ret": 0.18,
+    "Y_ret": -0.06,
+    "X_lag_1": 0.12,
+    "X_lag_2": 0.08,
+    "X_lag_3": -0.04,
+    "X_lag_4": 0.03,
+    "X_lag_5": 0.01,
+    "Y_lag_1": -0.02,
+    "Y_lag_2": 0.01,
+    "Y_lag_3": 0.03,
+    "Y_lag_4": -0.01,
+    "Y_lag_5": 0.02
+  }
+}
+```
+
+---
+
+### Classification Example
+
+```json
+{
+  "features": {
+    "X": 104.1,
+    "Y": 200.8,
+    "X_ret": 0.22,
+    "Y_ret": 0.04,
+    "X_lag_1": 0.15,
+    "X_lag_2": 0.09,
+    "X_lag_3": 0.02,
+    "X_lag_4": -0.01,
+    "X_lag_5": 0.03,
+    "Y_lag_1": 0.01,
+    "Y_lag_2": -0.02,
+    "Y_lag_3": 0.04,
+    "Y_lag_4": 0.00,
+    "Y_lag_5": 0.02
+  }
+}
+```
+
+---
+
+### Expected Responses
+
+#### Regression
+
+```json
+{
+  "task_type": "regression",
+  "model_type": "xgboost_reg",
+  "prediction": 0.0142
+}
+```
+
+#### Classification
+
+```json
+{
+  "task_type": "classification",
+  "model_type": "lightgbm_clf",
+  "prediction": 1,
+  "probability_up": 0.73
+}
+```
+
+---
+
 ## 🔥 Key Highlights
 
 - Lead–lag trading strategy  
@@ -203,6 +286,17 @@ http://127.0.0.1:8000/docs
 - Full backtesting engine  
 - API deployment  
 - Strong test coverage  
+
+---
+
+## 🧠 Interview Talking Points
+
+- Built ML-driven trading system using lead–lag signals  
+- Compared linear vs boosting models  
+- Implemented regression vs classification strategies  
+- Added GPU-aware training with fallback logic  
+- Designed backtesting framework with transaction costs  
+- Created full test suite for robustness  
 
 ---
 
