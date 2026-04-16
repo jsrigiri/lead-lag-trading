@@ -1,42 +1,73 @@
-# 🚀 Lead–Lag Trading System (End-to-End MLE Project)
+# 🚀 Lead–Lag Trading System (End-to-End MLE + Quant Project)
 
-An end-to-end machine learning system that models **intraday lead–lag relationships** between two time series (X → Y), generates trading signals, and exposes predictions via a production-ready API.
-
----
-
-## 📌 Problem
-
-In many financial markets, one asset (X) leads another (Y) with a short delay.  
-This project builds a system to:
-
-- Detect lead–lag relationships
-- Predict short-term returns of Y using X
-- Generate trading signals
-- Backtest strategy performance
-- Serve predictions via API
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/API-FastAPI-green)
+![ML](https://img.shields.io/badge/Model-Ridge%20Regression-orange)
+![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen)
+![Docker](https://img.shields.io/badge/Container-Docker-2496ED)
 
 ---
 
-## 🏗 Architecture
+## 📌 Overview
 
-Data → Feature Engineering → Model Training → Backtest → API Serving
+This project builds a **production-style machine learning system** to detect and trade **lead–lag relationships** between two time series.
+
+It simulates a realistic quant workflow:
+
+> Signal Research → Feature Engineering → Model → Backtest → API Deployment
+
+---
+
+## 🧠 Problem Statement
+
+In financial markets, some assets **lead others with a delay**.
+
+Goal:
+- Predict **future returns of asset Y**
+- Using **past behavior of asset X**
+- Convert predictions into **trading signals**
+- Evaluate via **backtesting with costs**
+
+---
+
+## 🏗 System Architecture
+
+```text
+Raw Data
+   ↓
+Feature Engineering (lags, returns)
+   ↓
+Model Training (Ridge Regression)
+   ↓
+Signal Generation
+   ↓
+Backtesting Engine
+   ↓
+Model Serialization
+   ↓
+FastAPI + Uvicorn (Real-time inference)
+```
 
 ---
 
 ## ⚙️ Tech Stack
 
-- Data Processing: Pandas, NumPy  
-- Modeling: Scikit-learn (Ridge Regression)  
-- Visualization: Matplotlib  
-- API: FastAPI  
-- Server: Uvicorn  
-- Testing: Pytest  
-- Serialization: Joblib  
+| Layer | Tools |
+|---|---|
+| Data Processing | Pandas, NumPy |
+| Modeling | Scikit-learn (Ridge) |
+| Backtesting | Custom Python Engine |
+| API Serving | FastAPI + Uvicorn |
+| Serialization | Joblib |
+| Testing | Pytest |
+| Visualization | Matplotlib |
+| Containerization | Docker |
 
 ---
 
 ## 📂 Project Structure
 
+```text
 lead-lag-trading/
 ├── data/
 │   └── sample.csv
@@ -48,83 +79,126 @@ lead-lag-trading/
 │   ├── model.joblib
 │   └── feature_columns.joblib
 ├── tests/
-│   └── test_basic.py
 ├── config.py
 ├── train.py
 ├── main.py
 ├── api.py
+├── generate_data.py
 ├── requirements.txt
+├── Dockerfile
 └── README.md
+```
 
 ---
 
 ## 📊 Feature Engineering
 
 - Lagged returns of X and Y
-- Autoregressive features
-- Target = next-period return of Y
+- Autoregressive signals
+- Cross-asset dependency modeling
 
-Example:
-X_lag_1, X_lag_2, ..., X_lag_k  
-Y_lag_1, Y_lag_2, ..., Y_lag_k  
+```text
+X_lag_1 ... X_lag_k
+Y_lag_1 ... Y_lag_k
+target = Y_return(t+1)
+```
 
 ---
 
 ## 🧠 Model
 
 - Ridge Regression (L2 regularization)
-- Predicts:
-  Y_return(t+1)
+- Handles multicollinearity in lag features
+- Predicts next-step return
+
+```text
+ŷ(t+1) = f(X_lags, Y_lags)
+```
 
 ---
 
-## 📈 Backtesting Logic
+## 📈 Backtesting Engine
 
-- Signal:
-  - Long if prediction > threshold
-  - Short if prediction < -threshold
-- Includes:
-  - Transaction costs
-  - Position changes
-  - Cumulative PnL
+### Signal Logic
+- Long when prediction > threshold
+- Short when prediction < -threshold
+
+### Includes
+- Transaction costs
+- Position changes
+- Realistic PnL computation
+
+---
+
+## 📊 Example Output
+
+### Equity Curve
+
+![Equity Curve](equity_curve.png)
+
+> Replace this sample image with your actual backtest output after running `main.py`.
+
+To save your own curve from `main.py`, use:
+
+```python
+plt.plot(equity)
+plt.title("Equity Curve")
+plt.xlabel("Time")
+plt.ylabel("Cumulative PnL")
+plt.tight_layout()
+plt.savefig("equity_curve.png", dpi=160)
+plt.show()
+```
 
 ---
 
 ## ▶️ How to Run
 
 ### 1. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
----
+### 2. Generate synthetic data
 
-### 2. Generate data
+```bash
 python generate_data.py
-
----
+```
 
 ### 3. Train model
-python train.py
 
----
+```bash
+python train.py
+```
 
 ### 4. Run backtest
+
+```bash
 python main.py
+```
 
----
+### 5. Start API server
 
-### 5. Run API
+```bash
 python -m uvicorn api:app --reload
+```
 
 Open:
+
+```text
 http://127.0.0.1:8000/docs
+```
 
 ---
 
 ## 🔌 API Usage
 
-### POST /predict
+### POST `/predict`
 
-Input:
+#### Input
+
+```json
 {
   "features": {
     "X": 100,
@@ -135,50 +209,114 @@ Input:
     "X_lag_2": 0.05
   }
 }
+```
 
-Output:
+#### Output
+
+```json
 {
   "prediction": 0.0123
 }
+```
 
 ---
 
-## 🧪 Tests
+## 🐳 Docker
 
+### Example `Dockerfile`
+
+```dockerfile
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["python", "-m", "uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+```
+
+### Build the image
+
+```bash
+docker build -t lead-lag-trading .
+```
+
+### Run the container
+
+```bash
+docker run -p 8000:8000 lead-lag-trading
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+---
+
+## 🧪 Testing
+
+```bash
 pytest
+```
 
 ---
 
-## 📊 Example Output
+## 🎥 Demo
 
-- Equity curve visualization
-- Strategy PnL over time
-- Model predictions vs actual returns
+A short API demo GIF is a great upgrade for GitHub, but it needs to be recorded on your machine. A simple workflow:
+
+1. Start the API with `python -m uvicorn api:app --reload`
+2. Open `/docs`
+3. Submit one `POST /predict` request
+4. Record 10–15 seconds with ScreenToGif, Kap, or Peek
+5. Save it as `demo.gif`
+6. Add this line to the README:
+
+```markdown
+![API Demo](demo.gif)
+```
 
 ---
 
-## 🔥 Key Highlights (MLE Focus)
+## 🔥 Key Highlights
 
-- End-to-end pipeline (data → model → API)  
-- Realistic time-series simulation  
-- Feature engineering for lag structures  
-- Transaction-cost-aware backtesting  
-- Model serialization and serving  
-- Production-style API with FastAPI  
+- End-to-end ML pipeline from research to serving
+- Time-series feature engineering for lag structure
+- Transaction-cost-aware backtesting
+- Model serialization and API deployment
+- Modular repo structure for extension and testing
 
 ---
 
 ## 🚀 Future Improvements
 
-- Walk-forward validation (rolling windows)
+- Walk-forward validation
 - Hyperparameter tuning
-- XGBoost / deep learning models
-- Real-time streaming (Kafka)
-- Docker + CI/CD pipeline
+- XGBoost or LSTM baseline
+- Live data stream ingestion
+- CI/CD pipeline
 - Feature store integration
+
+---
+
+## 🧠 Interview Talking Points
+
+- Built a lead–lag predictive trading system
+- Designed a time-series feature pipeline
+- Implemented realistic backtesting with costs
+- Exposed model inference through a low-latency API
+- Demonstrated a full ML lifecycle with deployment-oriented design
 
 ---
 
 ## 📌 Author
 
-Built as part of Machine Learning Engineering portfolio projects.
+Machine Learning Engineering Portfolio Project  
+(Quant + ML + Systems Focus)
