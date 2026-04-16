@@ -289,7 +289,7 @@ http://127.0.0.1:8000/docs
 
 ---
 
-## 🧠 Interview Talking Points
+## 🧠 Talking Points
 
 - Built ML-driven trading system using lead–lag signals  
 - Compared linear vs boosting models  
