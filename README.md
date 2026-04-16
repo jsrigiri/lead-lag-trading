@@ -179,16 +179,6 @@ pytest
 
 ---
 
-## 🧠 Interview Talking Points
-
-- Designed a lead–lag predictive system
-- Built feature pipeline for time-series modeling
-- Implemented backtesting with realistic constraints
-- Deployed model as low-latency API
-- Demonstrated full ML lifecycle (MLOps-ready)
-
----
-
 ## 📌 Author
 
 Built as part of Machine Learning Engineering portfolio projects.
